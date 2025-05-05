@@ -1,0 +1,25 @@
+# Act configuration file
+# Maps GitHub runner labels to Docker images
+
+# Runner image mapping
+-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+-P ubuntu-22.04=node:20-slim
+-P ubuntu-20.04=node:18-slim
+-P ubuntu-18.04=node:16-slim
+-P self-hosted=node:20-slim
+
+# Full GitHub Actions compatibility (larger image)
+# -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+
+# Medium size with more tools
+# -P ubuntu-latest=nektos/act-environments-ubuntu:18.04
+
+# Mac OS compatibility
+--container-architecture linux/amd64
+
+# Run Options
+--bind
+--rm
+--secret-file=.env.local  # Uncomment when you have a .secrets file
+
+

@@ -287,6 +287,54 @@ npm run build
 npm run dev
 ```
 
+### Code Quality
+
+This project uses ESLint (`.eslintrc.cjs`) and Prettier (`.prettierrc.json`) with standardized configurations to ensure code quality and consistency:
+
+```bash
+# Run linting
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
+
+# Run all validations (lint, format check, tests)
+npm run validate
+```
+
+The project is configured with:
+- ESLint with TypeScript and React support
+- Prettier with modern configuration
+- VS Code integration for automatic formatting and linting
+- CI pipeline validation via GitHub Actions
+
+VS Code users will get automatic formatting on save and linting with the provided workspace settings.
+
+### Publishing to NPM
+
+This project uses GitHub Actions to automatically publish to NPM when a new release is created:
+
+1. Ensure you have an NPM account and are added as a collaborator to the package
+2. Store your NPM token as a GitHub repository secret named `NPM_TOKEN`
+3. Create a new release on GitHub
+4. The workflow will automatically build and publish the package to NPM
+
+Manual publishing is also possible:
+
+```bash
+# Build the package
+npm run build
+
+# Publish to NPM
+npm publish
+```
+
 ## 🔬 Use Cases
 
 - **LLM Web Agents** - Help autonomous agents understand and interact with web UIs

@@ -472,9 +472,13 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
     }
   }
   
-  if (pageInfo.navigation && pageInfo.navigation.length > 0) {
+  if (pageInfo.navigation) {
     structureHTML += `<div><strong>Navigation:</strong></div><ul>`;
-    pageInfo.navigation.forEach(nav => {
+    const navItems = Array.isArray(pageInfo.navigation) 
+      ? pageInfo.navigation 
+      : [pageInfo.navigation];
+      
+    navItems.forEach((nav: string) => {
       structureHTML += `<li>${nav}</li>`;
       
       // Highlight navigation
@@ -487,9 +491,13 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
     structureHTML += `</ul>`;
   }
   
-  if (pageInfo.sidebar && pageInfo.sidebar.length > 0) {
+  if (pageInfo.sidebar) {
     structureHTML += `<div><strong>Sidebars:</strong></div><ul>`;
-    pageInfo.sidebar.forEach(side => {
+    const sidebarItems = Array.isArray(pageInfo.sidebar) 
+      ? pageInfo.sidebar 
+      : [pageInfo.sidebar];
+      
+    sidebarItems.forEach((side: string) => {
       structureHTML += `<li>${side}</li>`;
       
       // Highlight sidebar
@@ -535,7 +543,7 @@ const describeDataFlow = (flow: DataFlow): void => {
     // Create flow container
     const flowContainer = document.createElement('div');
     flowContainer.className = 'wao-data-flow';
-    flowContainer.setAttribute('data-description', flow.description);
+    flowContainer.setAttribute('data-description', flow.description ?? '');
     flowContainer.innerHTML = `
       <div><strong>From:</strong> ${flow.source} (${flow.dataType})</div>
       <div style="text-align: center;">↓</div>
@@ -676,7 +684,9 @@ const extractSemanticStructure = (): void => {
   // Detect navigation
   const navElements = document.querySelectorAll('nav, [role="navigation"], header ul, .nav, .navbar');
   navElements.forEach(nav => {
-    pageInfo.navigation?.push(getUniqueSelector(nav as HTMLElement));
+    if (Array.isArray(pageInfo.navigation)) {
+      pageInfo.navigation.push(getUniqueSelector(nav as HTMLElement));
+    }
   });
   
   // Detect footer
@@ -688,7 +698,9 @@ const extractSemanticStructure = (): void => {
   // Detect sidebars
   const sidebars = document.querySelectorAll('aside, .sidebar, [role="complementary"]');
   sidebars.forEach(sidebar => {
-    pageInfo.sidebar?.push(getUniqueSelector(sidebar as HTMLElement));
+    if (Array.isArray(pageInfo.sidebar)) {
+      pageInfo.sidebar.push(getUniqueSelector(sidebar as HTMLElement));
+    }
   });
   
   // Apply the structure

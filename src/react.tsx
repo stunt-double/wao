@@ -1,5 +1,5 @@
-// React integration for WAO
 import React, { useEffect, useState, Fragment } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 import { 
   activateOptimizer, 
   deactivateOptimizer, 
@@ -11,15 +11,80 @@ import {
   extractSemanticStructure,
   highlightElementRole,
   isActivated
-} from './core';
+} from './core.js';
+
+// Define types for props and interfaces
+interface InteractionType {
+  type: 'click' | 'hover' | 'focus';
+  method: string;
+  expectedOutcome?: string;
+}
+
+interface WAOHookReturn {
+  isActive: boolean;
+  activate: () => void;
+  deactivate: () => void;
+  describeElement: typeof describeElementVisually;
+  defineInteraction: typeof defineInteraction;
+  describePage: typeof describePage;
+  describeDataFlow: typeof describeDataFlow;
+  analyzeAccessibility: typeof analyzeAccessibility;
+  extractStructure: typeof extractSemanticStructure;
+  highlightRole: typeof highlightElementRole;
+}
+
+interface WAOProviderProps {
+  children: ReactNode;
+  autoActivate?: boolean;
+}
+
+interface WAOElementProps {
+  selector: string;
+  description: string;
+  elementType: string;
+  role?: string;
+  importance?: 'primary' | 'secondary' | 'tertiary';
+  dataContext?: string;
+  interactions?: InteractionType[];
+  children?: ReactNode;
+}
+
+interface WAOToggleProps {
+  className?: string;
+  style?: CSSProperties;
+}
+
+interface WAOPageProps {
+  structure: {
+    title?: string;
+    mainContent?: string;
+    navigation?: string | string[];
+    footer?: string;
+    sidebar?: string | string[];
+    [key: string]: any;
+  };
+  children?: ReactNode;
+}
+
+interface WAODataFlowProps {
+  flow: {
+    source: string;
+    destination: string;
+    dataType?: string;
+    description?: string;
+    [key: string]: any;
+  };
+}
+
+interface WAOInspectorProps {
+  autoAnalyze?: boolean;
+}
 
 /**
  * React hook to use WAO in functional components
- * @param {boolean} autoActivate - Whether to automatically activate WAO
- * @returns {Object} WAO interface
  */
-export const useWAO = (autoActivate = false) => {
-  const [isActive, setIsActive] = useState(isActivated());
+export const useWAO = (autoActivate = false): WAOHookReturn => {
+  const [isActive, setIsActive] = useState<boolean>(isActivated());
 
   // Sync state with WAO activation state
   useEffect(() => {
@@ -35,12 +100,12 @@ export const useWAO = (autoActivate = false) => {
   }, [autoActivate]);
 
   // Wrapper functions to update React state after WAO operations
-  const activate = () => {
+  const activate = (): void => {
     activateOptimizer(document.body);
     setIsActive(true);
   };
 
-  const deactivate = () => {
+  const deactivate = (): void => {
     deactivateOptimizer();
     setIsActive(false);
   };
@@ -61,12 +126,11 @@ export const useWAO = (autoActivate = false) => {
 
 /**
  * WAO Provider component for React applications
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Child elements
- * @param {boolean} props.autoActivate - Whether to automatically activate WAO
- * @returns {React.ReactElement}
  */
-export const WAOProvider = ({ children, autoActivate = false }) => {
+export const WAOProvider: React.FC<WAOProviderProps> = ({ 
+  children, 
+  autoActivate = false 
+}) => {
   const { isActive, activate } = useWAO(autoActivate);
 
   useEffect(() => {
@@ -75,23 +139,13 @@ export const WAOProvider = ({ children, autoActivate = false }) => {
     }
   }, [autoActivate, isActive, activate]);
 
-  return React.createElement(Fragment, null, children);
+  return <>{children}</>;
 };
 
 /**
  * WAO Element component to describe UI elements
- * @param {Object} props - Component props
- * @param {string} props.selector - CSS selector for the element
- * @param {string} props.description - Description of the element
- * @param {string} props.elementType - Type of element (e.g., 'button', 'input')
- * @param {string} props.role - Semantic role of the element
- * @param {string} props.importance - Importance level ('primary', 'secondary', 'tertiary')
- * @param {string} props.dataContext - Data context information
- * @param {Array} props.interactions - Array of interaction objects
- * @param {React.ReactNode} props.children - Child elements
- * @returns {React.ReactElement}
  */
-export const WAOElement = ({
+export const WAOElement: React.FC<WAOElementProps> = ({
   selector,
   description,
   elementType,
@@ -135,20 +189,19 @@ export const WAOElement = ({
     defineInteraction
   ]);
 
-  return React.createElement(Fragment, null, children);
+  return <>{children}</>;
 };
 
 /**
  * WAO Toggle Button component
  */
-export const WAOToggle = ({ className, style }) => {
+export const WAOToggle: React.FC<WAOToggleProps> = ({ className, style }) => {
   const { isActive, activate, deactivate } = useWAO();
 
-  return React.createElement(
-    'button',
-    {
-      className: `wao-react-toggle ${className || ''}`,
-      style: {
+  return (
+    <button
+      className={`wao-react-toggle ${className || ''}`}
+      style={{
         position: 'fixed',
         bottom: '20px',
         right: '20px',
@@ -162,17 +215,18 @@ export const WAOToggle = ({ className, style }) => {
         fontWeight: 'bold',
         boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
         ...style
-      },
-      onClick: () => isActive ? deactivate() : activate()
-    },
-    isActive ? 'Deactivate Optimization' : 'Activate Optimization'
+      }}
+      onClick={() => isActive ? deactivate() : activate()}
+    >
+      {isActive ? 'Deactivate Optimization' : 'Activate Optimization'}
+    </button>
   );
 };
 
 /**
  * WAO Page component to describe overall page structure
  */
-export const WAOPage = ({ structure, children }) => {
+export const WAOPage: React.FC<WAOPageProps> = ({ structure, children }) => {
   const { isActive, describePage } = useWAO();
 
   useEffect(() => {
@@ -181,13 +235,13 @@ export const WAOPage = ({ structure, children }) => {
     }
   }, [isActive, structure, describePage]);
 
-  return React.createElement(Fragment, null, children);
+  return <>{children}</>;
 };
 
 /**
  * WAO DataFlow component to visualize data flows
  */
-export const WAODataFlow = ({ flow }) => {
+export const WAODataFlow: React.FC<WAODataFlowProps> = ({ flow }) => {
   const { isActive, describeDataFlow } = useWAO();
 
   useEffect(() => {
@@ -202,7 +256,7 @@ export const WAODataFlow = ({ flow }) => {
 /**
  * WAO Inspector component for one-click accessibility and structure analysis
  */
-export const WAOInspector = ({ autoAnalyze = false }) => {
+export const WAOInspector: React.FC<WAOInspectorProps> = ({ autoAnalyze = false }) => {
   const { 
     isActive, 
     analyzeAccessibility, 
@@ -219,48 +273,44 @@ export const WAOInspector = ({ autoAnalyze = false }) => {
 
   if (!isActive) return null;
 
-  return React.createElement(
-    'div',
-    {
-      className: "wao-inspector-controls",
-      style: {
+  return (
+    <div
+      className="wao-inspector-controls"
+      style={{
         position: 'fixed',
         top: '20px',
         right: '20px',
         zIndex: 10000,
         display: 'flex',
         gap: '8px'
-      }
-    },
-    React.createElement(
-      'button',
-      {
-        onClick: analyzeAccessibility,
-        style: {
+      }}
+    >
+      <button
+        onClick={analyzeAccessibility}
+        style={{
           padding: '6px 12px',
           backgroundColor: '#e74c3c',
           color: 'white',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer'
-        }
-      },
-      'Analyze Accessibility'
-    ),
-    React.createElement(
-      'button',
-      {
-        onClick: extractStructure,
-        style: {
+        }}
+      >
+        Analyze Accessibility
+      </button>
+      <button
+        onClick={extractStructure}
+        style={{
           padding: '6px 12px',
           backgroundColor: '#2ecc71',
           color: 'white',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer'
-        }
-      },
-      'Analyze Structure'
-    )
+        }}
+      >
+        Analyze Structure
+      </button>
+    </div>
   );
 }; 

@@ -15,13 +15,68 @@ export interface InteractionMapping {
   expectedOutcome?: string; // Description of what happens when interaction occurs
 }
 
+/**
+ * Options for element description
+ */
+export interface ElementOptions {
+  role?: string;
+  importance?: 'primary' | 'secondary' | 'tertiary';
+  dataContext?: string;
+  [key: string]: any;
+}
+
+/**
+ * Data flow description
+ */
+export interface DataFlow {
+  source: string;
+  destination: string;
+  dataType?: string;
+  description?: string;
+  [key: string]: any;
+}
+
+/**
+ * Page structure description
+ */
 export interface PageStructure {
-  title: string;
-  mainContent: string; // Selector for main content
-  navigation: string[]; // Selectors for navigation elements
-  footer?: string; // Selector for footer
-  sidebar?: string[]; // Selectors for sidebars
-  headerLevel?: number; // Current heading level in hierarchy
+  title?: string;
+  mainContent?: string;
+  navigation?: string | string[];
+  footer?: string;
+  sidebar?: string | string[];
+  [key: string]: any;
+}
+
+/**
+ * Supported interaction types
+ */
+export type InteractionType = 'click' | 'hover' | 'focus';
+
+/**
+ * WAO core API
+ */
+export interface WAOApi {
+  activateOptimizer: (element: HTMLElement) => void;
+  deactivateOptimizer: () => void;
+  describeElementVisually: (
+    selector: string, 
+    description: string, 
+    elementType: string, 
+    options?: ElementOptions
+  ) => void;
+  defineInteraction: (
+    selector: string, 
+    interactionType: InteractionType, 
+    methodName: string,
+    expectedOutcome?: string
+  ) => void;
+  describePage: (structure: PageStructure) => void;
+  describeDataFlow: (flow: DataFlow) => void;
+  analyzeAccessibility: () => void;
+  extractSemanticStructure: () => void;
+  highlightElementRole: (selector: string, role: string) => void;
+  isActivated: () => boolean;
 }
 
 export type PageState = {
@@ -33,13 +88,6 @@ export type PageState = {
     dataFlows?: DataFlow[]; // Data flows on the page
     accessibility?: AccessibilityInfo; // Accessibility information
 };
-
-export interface DataFlow {
-  source: string; // Source element selector
-  destination: string; // Destination element selector
-  dataType: string; // Type of data being transferred
-  description: string; // Description of the data flow
-}
 
 export interface AccessibilityInfo {
   ariaLabels: {[selector: string]: string}; // Map of element selectors to their ARIA labels
