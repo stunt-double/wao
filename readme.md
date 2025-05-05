@@ -4,8 +4,6 @@
 
 WAO (Web Augmentation Optimizer) is a lightweight JavaScript library that transforms any website into a structured, semantic representation optimized for Large Language Models (LLMs) acting as autonomous web agents.
 
-![WAO Banner](https://via.placeholder.com/800x200/3498db/ffffff?text=Web+Augmentation+Optimizer)
-
 ## 🚀 Features
 
 - **Zero-config activation** - WAO stays dormant until an LLM activates it
@@ -47,12 +45,7 @@ Once activated, WAO transforms the page by:
 
 ### NPM
 ```bash
-npm install web-augmentation-optimizer
-```
-
-### CDN
-```html
-<script src="https://cdn.jsdelivr.net/npm/web-augmentation-optimizer@latest/dist/wao.min.js"></script>
+npm install @stunt-double/wao
 ```
 
 ## 🔧 Usage
