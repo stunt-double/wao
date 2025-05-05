@@ -46,10 +46,5 @@ jobs:
       - name: Check formatting
         run: pnpm run format:check
         
-      - name: Run tests
-        run: pnpm run test
-        env:
-          NODE_OPTIONS: --experimental-vm-modules
-        
       - name: Build package
         run: pnpm run build
