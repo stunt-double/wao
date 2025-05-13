@@ -1,20 +1,27 @@
 // core.ts - Web Augmentation Optimizer (WAO)
-import type { ElementDescription, PageState, InteractionMapping, PageStructure, DataFlow, AccessibilityInfo } from './types';
+import type {
+  ElementDescription,
+  PageState,
+  InteractionMapping,
+  PageStructure,
+  DataFlow,
+  AccessibilityInfo,
+} from './types';
 import { createDOMComment, logMessage } from './utils';
 
 // Core state for the library
 const pageState: PageState = {
-    originalDOM: document.body, // Initial state
-    optimizedElements: [],
-    interactionMappings: [],
-    isActive: false,
-    pageStructure: undefined,
-    dataFlows: [],
-    accessibility: {
-      ariaLabels: {},
-      tabOrder: [],
-      colorContrast: {}
-    }
+  originalDOM: document.body, // Initial state
+  optimizedElements: [],
+  interactionMappings: [],
+  isActive: false,
+  pageStructure: undefined,
+  dataFlows: [],
+  accessibility: {
+    ariaLabels: {},
+    tabOrder: [],
+    colorContrast: {},
+  },
 };
 
 // CSS Styles for optimized elements
@@ -174,14 +181,14 @@ const injectActivationInstructions = (): void => {
     - To deactivate, call 'window.WAO.deactivateOptimizer()'
   `);
   document.body.prepend(comment);
-  
+
   // Also inject a data attribute observer
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
       if (mutation.attributeName === 'data-wao-active') {
         const bodyElement = document.body;
         const isActive = bodyElement.getAttribute('data-wao-active') === 'true';
-        
+
         if (isActive && !pageState.isActive) {
           activateOptimizer(bodyElement);
         } else if (!isActive && pageState.isActive) {
@@ -190,7 +197,7 @@ const injectActivationInstructions = (): void => {
       }
     });
   });
-  
+
   observer.observe(document.body, { attributes: true });
 };
 
@@ -208,9 +215,9 @@ const activateOptimizer = (domElement: HTMLElement): void => {
     injectStyles();
     addToggle();
     setupEventListeners();
-    logMessage("Optimizer activated");
+    logMessage('Optimizer activated');
   } else {
-    logMessage("Optimizer already active");
+    logMessage('Optimizer already active');
   }
 };
 
@@ -220,44 +227,44 @@ const deactivateOptimizer = (): void => {
     // Don't replace the whole body to avoid losing the script
     // Instead, revert individual optimized elements
     pageState.optimizedElements.forEach(revertElementVisuals);
-    
+
     // Remove any added styles and toggles
     const styleElement = document.getElementById('wao-styles');
     if (styleElement) styleElement.remove();
-    
+
     const toggleButton = document.querySelector('.wao-toggle');
     if (toggleButton) toggleButton.remove();
-    
+
     // Cleanup
     document.body.removeAttribute('data-wao-active');
     removeEventListeners();
     pageState.optimizedElements = [];
     pageState.interactionMappings = [];
     pageState.isActive = false;
-    logMessage("Optimizer deactivated");
+    logMessage('Optimizer deactivated');
   } else {
-    logMessage("Optimizer is not active");
+    logMessage('Optimizer is not active');
   }
 };
 
 // Define an interaction for an element
 const defineInteraction = (
-  elementSelector: string, 
-  interactionType: 'click' | 'hover' | 'focus', 
+  elementSelector: string,
+  interactionType: 'click' | 'hover' | 'focus',
   methodName: string,
-  expectedOutcome?: string
+  expectedOutcome?: string,
 ): void => {
   if (!isActivated()) return;
-  
-  const mapping: InteractionMapping = { 
-    elementSelector, 
-    interactionType, 
+
+  const mapping: InteractionMapping = {
+    elementSelector,
+    interactionType,
     methodName,
-    expectedOutcome 
+    expectedOutcome,
   };
-  
+
   pageState.interactionMappings.push(mapping);
-  
+
   // Find any already optimized elements and add interaction information
   const element = document.querySelector(elementSelector);
   if (element) {
@@ -269,9 +276,10 @@ const defineInteraction = (
         interactionElement.className = 'wao-interaction';
         optimizedElement.appendChild(interactionElement);
       }
-      
+
       const interactionText = `${interactionType} → ${methodName}`;
-      interactionElement.textContent += interactionText + (expectedOutcome ? ` (${expectedOutcome})` : '') + ' ';
+      interactionElement.textContent +=
+        interactionText + (expectedOutcome ? ` (${expectedOutcome})` : '') + ' ';
     }
   }
 };
@@ -279,12 +287,12 @@ const defineInteraction = (
 // Handle interaction events
 const handleInteraction = (event: Event): void => {
   const target = event.target as HTMLElement;
-  
+
   pageState.interactionMappings.forEach(mapping => {
     const matchedElement = target.closest(mapping.elementSelector);
     if (matchedElement && mapping.interactionType === event.type) {
       logMessage(`Interaction triggered: ${mapping.methodName} on ${mapping.elementSelector}`);
-      
+
       // Here you would execute the actual method
       // Safely attempt to call the method if it exists on window
       const method = window[mapping.methodName as keyof typeof window];
@@ -304,20 +312,24 @@ const addToggle = (): void => {
   // Remove existing button if present
   const existingButton = document.querySelector('.wao-toggle');
   if (existingButton) existingButton.remove();
-  
+
   const toggleButton = document.createElement('button');
   toggleButton.className = 'wao-toggle';
-  toggleButton.textContent = pageState.isActive ? 'Deactivate Optimization' : 'Activate Optimization';
-  
+  toggleButton.textContent = pageState.isActive
+    ? 'Deactivate Optimization'
+    : 'Activate Optimization';
+
   toggleButton.addEventListener('click', () => {
     if (pageState.isActive) {
       deactivateOptimizer();
     } else {
       activateOptimizer(document.body);
     }
-    toggleButton.textContent = pageState.isActive ? 'Deactivate Optimization' : 'Activate Optimization';
+    toggleButton.textContent = pageState.isActive
+      ? 'Deactivate Optimization'
+      : 'Activate Optimization';
   });
-  
+
   document.body.appendChild(toggleButton);
 };
 
@@ -337,44 +349,44 @@ const removeEventListeners = (): void => {
 
 // Visually describe an element
 const describeElementVisually = (
-  selector: string, 
-  description: string, 
+  selector: string,
+  description: string,
   elementType: string,
   options?: {
     role?: string;
     importance?: 'primary' | 'secondary' | 'tertiary';
     dataContext?: string;
-  }
+  },
 ): void => {
   if (!isActivated()) return;
-  
+
   const element = document.querySelector(selector);
   if (!element) {
     logMessage(`Element not found: ${selector}`);
     return;
   }
-  
+
   // Check if already optimized
   if (element.closest('.wao-optimized-element')) {
     logMessage(`Element already optimized: ${selector}`);
     return;
   }
-  
+
   // Create the wrapper
   const wrapper = document.createElement('div');
   wrapper.className = 'wao-optimized-element';
   wrapper.setAttribute('data-original-selector', selector);
-  
+
   // Add importance class if specified
   if (options?.importance) {
     wrapper.classList.add(`wao-importance-${options.importance}`);
   }
-  
+
   // Create description
   const descriptionElement = document.createElement('div');
   descriptionElement.className = 'wao-description';
   descriptionElement.textContent = description;
-  
+
   // Add data context if specified
   if (options?.dataContext) {
     const dataContextEl = document.createElement('div');
@@ -383,12 +395,12 @@ const describeElementVisually = (
     dataContextEl.textContent = `Data: ${options.dataContext}`;
     descriptionElement.appendChild(dataContextEl);
   }
-  
+
   // Create tag
   const tagElement = document.createElement('span');
   tagElement.className = 'wao-tag';
   tagElement.textContent = `<${elementType}>`;
-  
+
   // Create role tag if specified
   if (options?.role) {
     const roleElement = document.createElement('span');
@@ -396,38 +408,38 @@ const describeElementVisually = (
     roleElement.textContent = options.role;
     wrapper.appendChild(roleElement);
   }
-  
+
   // Assemble the wrapper
   wrapper.appendChild(tagElement);
   wrapper.appendChild(descriptionElement);
-  
+
   // Replace the original element with our wrapper
   element.parentNode?.replaceChild(wrapper, element);
-  
+
   // Store the optimization for potential revert
-  pageState.optimizedElements.push({ 
-    selector, 
+  pageState.optimizedElements.push({
+    selector,
     description,
     originalHTML: element.outerHTML,
     role: options?.role,
     importance: options?.importance,
-    dataContext: options?.dataContext
+    dataContext: options?.dataContext,
   });
 };
 
 // Revert visual optimization
 const revertElementVisuals = (elementDescription: ElementDescription): void => {
   const optimizedElement = document.querySelector(
-    `.wao-optimized-element[data-original-selector="${elementDescription.selector}"]`
+    `.wao-optimized-element[data-original-selector="${elementDescription.selector}"]`,
   );
-  
+
   if (optimizedElement) {
     // Create a temporary container to convert HTML string to Element
     const tempContainer = document.createElement('div');
     if (elementDescription.originalHTML) {
       tempContainer.innerHTML = elementDescription.originalHTML;
       const originalElement = tempContainer.firstElementChild;
-      
+
       if (originalElement) {
         optimizedElement.parentNode?.replaceChild(originalElement, optimizedElement);
       }
@@ -438,32 +450,32 @@ const revertElementVisuals = (elementDescription: ElementDescription): void => {
 // New function: Describe overall page structure
 const describePage = (pageInfo: Partial<PageStructure>): void => {
   if (!isActivated()) return;
-  
+
   // Store page structure
   pageState.pageStructure = {
     ...pageState.pageStructure,
-    ...pageInfo
+    ...pageInfo,
   } as PageStructure;
-  
+
   // Create or update page structure visualization
   let structureEl = document.querySelector('.wao-page-structure');
-  
+
   if (!structureEl) {
     structureEl = document.createElement('div');
     structureEl.className = 'wao-page-structure';
     document.body.appendChild(structureEl);
   }
-  
+
   // Build HTML content for page structure
   let structureHTML = '<h3>Page Structure</h3>';
-  
+
   if (pageInfo.title) {
     structureHTML += `<div><strong>Title:</strong> ${pageInfo.title}</div>`;
   }
-  
+
   if (pageInfo.mainContent) {
     structureHTML += `<div><strong>Main:</strong> ${pageInfo.mainContent}</div>`;
-    
+
     // Highlight main content
     const mainEl = document.querySelector(pageInfo.mainContent);
     if (mainEl && !mainEl.classList.contains('wao-optimized-element')) {
@@ -471,16 +483,16 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
       mainEl.setAttribute('style', 'border: 2px dashed #3498db !important; padding: 8px;');
     }
   }
-  
+
   if (pageInfo.navigation) {
     structureHTML += `<div><strong>Navigation:</strong></div><ul>`;
-    const navItems = Array.isArray(pageInfo.navigation) 
-      ? pageInfo.navigation 
+    const navItems = Array.isArray(pageInfo.navigation)
+      ? pageInfo.navigation
       : [pageInfo.navigation];
-      
+
     navItems.forEach((nav: string) => {
       structureHTML += `<li>${nav}</li>`;
-      
+
       // Highlight navigation
       const navEl = document.querySelector(nav);
       if (navEl && !navEl.classList.contains('wao-optimized-element')) {
@@ -490,16 +502,14 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
     });
     structureHTML += `</ul>`;
   }
-  
+
   if (pageInfo.sidebar) {
     structureHTML += `<div><strong>Sidebars:</strong></div><ul>`;
-    const sidebarItems = Array.isArray(pageInfo.sidebar) 
-      ? pageInfo.sidebar 
-      : [pageInfo.sidebar];
-      
+    const sidebarItems = Array.isArray(pageInfo.sidebar) ? pageInfo.sidebar : [pageInfo.sidebar];
+
     sidebarItems.forEach((side: string) => {
       structureHTML += `<li>${side}</li>`;
-      
+
       // Highlight sidebar
       const sideEl = document.querySelector(side);
       if (sideEl && !sideEl.classList.contains('wao-optimized-element')) {
@@ -509,10 +519,10 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
     });
     structureHTML += `</ul>`;
   }
-  
+
   if (pageInfo.footer) {
     structureHTML += `<div><strong>Footer:</strong> ${pageInfo.footer}</div>`;
-    
+
     // Highlight footer
     const footerEl = document.querySelector(pageInfo.footer);
     if (footerEl && !footerEl.classList.contains('wao-optimized-element')) {
@@ -520,25 +530,25 @@ const describePage = (pageInfo: Partial<PageStructure>): void => {
       footerEl.setAttribute('style', 'border: 2px dashed #9b59b6 !important; padding: 4px;');
     }
   }
-  
+
   structureEl.innerHTML = structureHTML;
 };
 
 // New function: Describe data flows between elements
 const describeDataFlow = (flow: DataFlow): void => {
   if (!isActivated()) return;
-  
+
   // Store the data flow
   if (!pageState.dataFlows) {
     pageState.dataFlows = [];
   }
-  
+
   pageState.dataFlows.push(flow);
-  
+
   // Visualize the data flow
   const sourceEl = document.querySelector(flow.source);
   const destEl = document.querySelector(flow.destination);
-  
+
   if (sourceEl && destEl) {
     // Create flow container
     const flowContainer = document.createElement('div');
@@ -549,7 +559,7 @@ const describeDataFlow = (flow: DataFlow): void => {
       <div style="text-align: center;">↓</div>
       <div><strong>To:</strong> ${flow.destination}</div>
     `;
-    
+
     // Insert after destination element
     destEl.parentNode?.insertBefore(flowContainer, destEl.nextSibling);
   }
@@ -558,59 +568,65 @@ const describeDataFlow = (flow: DataFlow): void => {
 // New function: Analyze page for accessibility issues
 const analyzeAccessibility = (): void => {
   if (!isActivated()) return;
-  
+
   const accessibilityInfo: AccessibilityInfo = {
     ariaLabels: {},
     tabOrder: [],
-    colorContrast: {}
+    colorContrast: {},
   };
-  
+
   // Find all interactive elements
-  const interactiveElements = document.querySelectorAll('button, a, input, select, textarea, [role="button"], [tabindex]');
-  
+  const interactiveElements = document.querySelectorAll(
+    'button, a, input, select, textarea, [role="button"], [tabindex]',
+  );
+
   // Analyze each element
-  interactiveElements.forEach((element) => {
+  interactiveElements.forEach(element => {
     const elemNode = element as HTMLElement;
     const selector = getUniqueSelector(elemNode);
-    
+
     // Check for ARIA labels
     const ariaLabel = elemNode.getAttribute('aria-label');
     const ariaLabelledBy = elemNode.getAttribute('aria-labelledby');
-    
+
     if (!ariaLabel && !ariaLabelledBy && elemNode.tagName !== 'INPUT') {
       // Mark as accessibility issue
       elemNode.classList.add('wao-accessibility-issue');
-      
+
       // Store issue
       accessibilityInfo.colorContrast[selector] = 'Missing ARIA label';
     }
-    
+
     // Store existing labels
     if (ariaLabel) {
       accessibilityInfo.ariaLabels[selector] = ariaLabel;
     }
-    
+
     // Build tab order
-    if (elemNode.tabIndex >= 0 || 
-        elemNode.tagName === 'A' || 
-        elemNode.tagName === 'BUTTON' || 
-        elemNode.tagName === 'INPUT' || 
-        elemNode.tagName === 'SELECT' || 
-        elemNode.tagName === 'TEXTAREA') {
+    if (
+      elemNode.tabIndex >= 0 ||
+      elemNode.tagName === 'A' ||
+      elemNode.tagName === 'BUTTON' ||
+      elemNode.tagName === 'INPUT' ||
+      elemNode.tagName === 'SELECT' ||
+      elemNode.tagName === 'TEXTAREA'
+    ) {
       accessibilityInfo.tabOrder.push(selector);
     }
   });
-  
+
   // Store accessibility info
   pageState.accessibility = accessibilityInfo;
-  
+
   // Create accessibility report
   let accessibilityEl = document.querySelector('.wao-accessibility-report');
-  
+
   if (!accessibilityEl) {
     accessibilityEl = document.createElement('div');
     accessibilityEl.className = 'wao-accessibility-report';
-    accessibilityEl.setAttribute('style', `
+    accessibilityEl.setAttribute(
+      'style',
+      `
       position: fixed;
       left: 20px;
       top: 20px;
@@ -623,78 +639,87 @@ const analyzeAccessibility = (): void => {
       max-width: 300px;
       max-height: 300px;
       overflow: auto;
-    `);
+    `,
+    );
     document.body.appendChild(accessibilityEl);
   }
-  
+
   // Build HTML content for accessibility report
   let reportHTML = '<h3>Accessibility Report</h3>';
-  
+
   // Tab order
   reportHTML += `<div><strong>Tab Order (${accessibilityInfo.tabOrder.length} elements):</strong></div><ol>`;
   accessibilityInfo.tabOrder.slice(0, 10).forEach(selector => {
     reportHTML += `<li>${selector}</li>`;
   });
-  
+
   if (accessibilityInfo.tabOrder.length > 10) {
     reportHTML += `<li>... and ${accessibilityInfo.tabOrder.length - 10} more</li>`;
   }
-  
+
   reportHTML += `</ol>`;
-  
+
   // Issues
   const issueCount = Object.keys(accessibilityInfo.colorContrast).length;
   reportHTML += `<div><strong>Issues (${issueCount}):</strong></div>`;
-  
+
   if (issueCount > 0) {
     reportHTML += `<ul>`;
-    Object.entries(accessibilityInfo.colorContrast).slice(0, 5).forEach(([selector, issue]) => {
-      reportHTML += `<li>${selector}: ${issue}</li>`;
-    });
-    
+    Object.entries(accessibilityInfo.colorContrast)
+      .slice(0, 5)
+      .forEach(([selector, issue]) => {
+        reportHTML += `<li>${selector}: ${issue}</li>`;
+      });
+
     if (issueCount > 5) {
       reportHTML += `<li>... and ${issueCount - 5} more</li>`;
     }
-    
+
     reportHTML += `</ul>`;
   }
-  
+
   accessibilityEl.innerHTML = reportHTML;
 };
 
 // New function: Extract semantic structure automatically
 const extractSemanticStructure = (): void => {
   if (!isActivated()) return;
-  
+
   const pageInfo: Partial<PageStructure> = {
     title: document.title,
     navigation: [],
-    sidebar: []
+    sidebar: [],
   };
-  
+
   // Detect main content
-  const mainContent = document.querySelector('main') || 
-                     document.querySelector('[role="main"]') ||
-                     document.querySelector('#main');
-  
+  const mainContent =
+    document.querySelector('main') ||
+    document.querySelector('[role="main"]') ||
+    document.querySelector('#main');
+
   if (mainContent) {
     pageInfo.mainContent = getUniqueSelector(mainContent as HTMLElement);
   }
-  
+
   // Detect navigation
-  const navElements = document.querySelectorAll('nav, [role="navigation"], header ul, .nav, .navbar');
+  const navElements = document.querySelectorAll(
+    'nav, [role="navigation"], header ul, .nav, .navbar',
+  );
   navElements.forEach(nav => {
     if (Array.isArray(pageInfo.navigation)) {
       pageInfo.navigation.push(getUniqueSelector(nav as HTMLElement));
     }
   });
-  
+
   // Detect footer
-  const footer = document.querySelector('footer') || document.querySelector('.footer') || document.querySelector('#footer');
+  const footer =
+    document.querySelector('footer') ||
+    document.querySelector('.footer') ||
+    document.querySelector('#footer');
   if (footer) {
     pageInfo.footer = getUniqueSelector(footer as HTMLElement);
   }
-  
+
   // Detect sidebars
   const sidebars = document.querySelectorAll('aside, .sidebar, [role="complementary"]');
   sidebars.forEach(sidebar => {
@@ -702,78 +727,73 @@ const extractSemanticStructure = (): void => {
       pageInfo.sidebar.push(getUniqueSelector(sidebar as HTMLElement));
     }
   });
-  
+
   // Apply the structure
   describePage(pageInfo);
-  
+
   // Also process headings for hierarchy
   const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
   headings.forEach(heading => {
     const level = parseInt(heading.tagName.charAt(1));
     const text = heading.textContent || '';
     const selector = getUniqueSelector(heading as HTMLElement);
-    
-    describeElementVisually(
-      selector,
-      `Heading: ${text}`,
-      heading.tagName.toLowerCase(),
-      {
-        role: 'heading-level-' + level,
-        importance: level <= 2 ? 'primary' : level <= 4 ? 'secondary' : 'tertiary'
-      }
-    );
+
+    describeElementVisually(selector, `Heading: ${text}`, heading.tagName.toLowerCase(), {
+      role: 'heading-level-' + level,
+      importance: level <= 2 ? 'primary' : level <= 4 ? 'secondary' : 'tertiary',
+    });
   });
 };
 
 // New function: Highlight element with its semantic role
 const highlightElementRole = (selector: string, role: string): void => {
   if (!isActivated()) return;
-  
+
   const element = document.querySelector(selector);
   if (!element) {
     logMessage(`Element not found: ${selector}`);
     return;
   }
-  
+
   // If already optimized, add role to existing element
   const optimizedElement = element.closest('.wao-optimized-element');
   if (optimizedElement) {
     let roleElement = optimizedElement.querySelector('.wao-role');
-    
+
     if (!roleElement) {
       roleElement = document.createElement('span');
       roleElement.className = 'wao-role';
       optimizedElement.appendChild(roleElement);
     }
-    
+
     (roleElement as HTMLElement).textContent = role;
     return;
   }
-  
+
   // Otherwise, create a minimal wrapper with just the role
   const wrapper = document.createElement('div');
   wrapper.className = 'wao-optimized-element';
   wrapper.setAttribute('data-original-selector', selector);
-  
+
   const roleElement = document.createElement('span');
   roleElement.className = 'wao-role';
   roleElement.textContent = role;
-  
+
   // Clone the original element as a child of the wrapper
   const clonedElement = element.cloneNode(true);
-  
+
   wrapper.appendChild(roleElement);
   wrapper.appendChild(clonedElement);
-  
+
   // Replace original with wrapper
   element.parentNode?.replaceChild(wrapper, element);
-  
+
   // Store for reversion
   pageState.optimizedElements.push({
     selector,
     description: `Element with role: ${role}`,
     originalHTML: element.outerHTML,
-    role
+    role,
   });
 };
 
@@ -782,7 +802,7 @@ const getUniqueSelector = (element: HTMLElement): string => {
   if (element.id) {
     return `#${element.id}`;
   }
-  
+
   // Try using classes
   if (element.className && typeof element.className === 'string') {
     const classes = element.className.trim().split(/\s+/);
@@ -793,7 +813,7 @@ const getUniqueSelector = (element: HTMLElement): string => {
       }
     }
   }
-  
+
   // Fallback to tag name and position
   const sameTagElements = Array.from(document.querySelectorAll(element.tagName));
   const index = sameTagElements.indexOf(element);
@@ -803,12 +823,12 @@ const getUniqueSelector = (element: HTMLElement): string => {
 // Initialize the library
 const initialize = (): void => {
   injectActivationInstructions();
-  
+
   // Check if the body already has the activation attribute
   if (document.body.getAttribute('data-wao-active') === 'true') {
     activateOptimizer(document.body);
   }
-  
+
   // Expose API globally
   window.WAO = {
     activateOptimizer,
@@ -820,7 +840,7 @@ const initialize = (): void => {
     describeDataFlow,
     analyzeAccessibility,
     extractSemanticStructure,
-    highlightElementRole
+    highlightElementRole,
   };
 };
 
@@ -828,15 +848,15 @@ const initialize = (): void => {
 initialize();
 
 // Export public API
-export { 
-  activateOptimizer, 
-  deactivateOptimizer, 
-  describeElementVisually, 
-  defineInteraction, 
+export {
+  activateOptimizer,
+  deactivateOptimizer,
+  describeElementVisually,
+  defineInteraction,
   revertElementVisuals,
   describePage,
   describeDataFlow,
   analyzeAccessibility,
   extractSemanticStructure,
-  highlightElementRole
+  highlightElementRole,
 };

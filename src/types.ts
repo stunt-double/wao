@@ -60,16 +60,16 @@ export interface WAOApi {
   activateOptimizer: (element: HTMLElement) => void;
   deactivateOptimizer: () => void;
   describeElementVisually: (
-    selector: string, 
-    description: string, 
-    elementType: string, 
-    options?: ElementOptions
+    selector: string,
+    description: string,
+    elementType: string,
+    options?: ElementOptions,
   ) => void;
   defineInteraction: (
-    selector: string, 
-    interactionType: InteractionType, 
+    selector: string,
+    interactionType: InteractionType,
     methodName: string,
-    expectedOutcome?: string
+    expectedOutcome?: string,
   ) => void;
   describePage: (structure: PageStructure) => void;
   describeDataFlow: (flow: DataFlow) => void;
@@ -80,19 +80,19 @@ export interface WAOApi {
 }
 
 export type PageState = {
-    originalDOM: HTMLElement; // Store original DOM for reverting.
-    optimizedElements: ElementDescription[];
-    interactionMappings: InteractionMapping[];
-    isActive: boolean;
-    pageStructure?: PageStructure; // Overall page structure
-    dataFlows?: DataFlow[]; // Data flows on the page
-    accessibility?: AccessibilityInfo; // Accessibility information
+  originalDOM: HTMLElement; // Store original DOM for reverting.
+  optimizedElements: ElementDescription[];
+  interactionMappings: InteractionMapping[];
+  isActive: boolean;
+  pageStructure?: PageStructure; // Overall page structure
+  dataFlows?: DataFlow[]; // Data flows on the page
+  accessibility?: AccessibilityInfo; // Accessibility information
 };
 
 export interface AccessibilityInfo {
-  ariaLabels: {[selector: string]: string}; // Map of element selectors to their ARIA labels
+  ariaLabels: { [selector: string]: string }; // Map of element selectors to their ARIA labels
   tabOrder: string[]; // Selectors in tab navigation order
-  colorContrast: {[selector: string]: string}; // Color contrast issues
+  colorContrast: { [selector: string]: string }; // Color contrast issues
 }
 
 // Extend Window interface to include WAO API
@@ -102,7 +102,11 @@ declare global {
       activateOptimizer: (domElement: HTMLElement) => void;
       deactivateOptimizer: () => void;
       describeElementVisually: (selector: string, description: string, elementType: string) => void;
-      defineInteraction: (elementSelector: string, interactionType: 'click' | 'hover' | 'focus', methodName: string) => void;
+      defineInteraction: (
+        elementSelector: string,
+        interactionType: 'click' | 'hover' | 'focus',
+        methodName: string,
+      ) => void;
       isActivated: () => boolean;
       describePage: (pageInfo: Partial<PageStructure>) => void;
       describeDataFlow: (flow: DataFlow) => void;

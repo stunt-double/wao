@@ -1,16 +1,16 @@
 // React integration for WAO
 import React, { useEffect, useState, Fragment } from 'react';
-import { 
-  activateOptimizer, 
-  deactivateOptimizer, 
-  describeElementVisually, 
+import {
+  activateOptimizer,
+  deactivateOptimizer,
+  describeElementVisually,
   defineInteraction,
   describePage,
   describeDataFlow,
   analyzeAccessibility,
   extractSemanticStructure,
   highlightElementRole,
-  isActivated
+  isActivated,
 } from './core';
 
 /**
@@ -24,7 +24,7 @@ export const useWAO = (autoActivate = false) => {
   // Sync state with WAO activation state
   useEffect(() => {
     setIsActive(isActivated());
-    
+
     // Auto activate if specified
     if (autoActivate && !isActivated()) {
       activateOptimizer(document.body);
@@ -55,7 +55,7 @@ export const useWAO = (autoActivate = false) => {
     describeDataFlow,
     analyzeAccessibility,
     extractStructure: extractSemanticStructure,
-    highlightRole: highlightElementRole
+    highlightRole: highlightElementRole,
   };
 };
 
@@ -99,7 +99,7 @@ export const WAOElement = ({
   importance,
   dataContext,
   interactions = [],
-  children
+  children,
 }) => {
   const { isActive, describeElement, defineInteraction } = useWAO();
 
@@ -109,7 +109,7 @@ export const WAOElement = ({
       describeElement(selector, description, elementType, {
         role,
         importance,
-        dataContext
+        dataContext,
       });
 
       // Set up interactions if provided
@@ -118,21 +118,21 @@ export const WAOElement = ({
           selector,
           interaction.type,
           interaction.method,
-          interaction.expectedOutcome
+          interaction.expectedOutcome,
         );
       });
     }
   }, [
-    isActive, 
-    selector, 
-    description, 
-    elementType, 
-    role, 
-    importance, 
-    dataContext, 
+    isActive,
+    selector,
+    description,
+    elementType,
+    role,
+    importance,
+    dataContext,
     interactions,
     describeElement,
-    defineInteraction
+    defineInteraction,
   ]);
 
   return React.createElement(Fragment, null, children);
@@ -161,11 +161,11 @@ export const WAOToggle = ({ className, style }) => {
         cursor: 'pointer',
         fontWeight: 'bold',
         boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-        ...style
+        ...style,
       },
-      onClick: () => isActive ? deactivate() : activate()
+      onClick: () => (isActive ? deactivate() : activate()),
     },
-    isActive ? 'Deactivate Optimization' : 'Activate Optimization'
+    isActive ? 'Deactivate Optimization' : 'Activate Optimization',
   );
 };
 
@@ -203,11 +203,7 @@ export const WAODataFlow = ({ flow }) => {
  * WAO Inspector component for one-click accessibility and structure analysis
  */
 export const WAOInspector = ({ autoAnalyze = false }) => {
-  const { 
-    isActive, 
-    analyzeAccessibility, 
-    extractStructure 
-  } = useWAO();
+  const { isActive, analyzeAccessibility, extractStructure } = useWAO();
 
   useEffect(() => {
     if (isActive && autoAnalyze) {
@@ -222,15 +218,15 @@ export const WAOInspector = ({ autoAnalyze = false }) => {
   return React.createElement(
     'div',
     {
-      className: "wao-inspector-controls",
+      className: 'wao-inspector-controls',
       style: {
         position: 'fixed',
         top: '20px',
         right: '20px',
         zIndex: 10000,
         display: 'flex',
-        gap: '8px'
-      }
+        gap: '8px',
+      },
     },
     React.createElement(
       'button',
@@ -242,10 +238,10 @@ export const WAOInspector = ({ autoAnalyze = false }) => {
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: 'pointer'
-        }
+          cursor: 'pointer',
+        },
       },
-      'Analyze Accessibility'
+      'Analyze Accessibility',
     ),
     React.createElement(
       'button',
@@ -257,10 +253,10 @@ export const WAOInspector = ({ autoAnalyze = false }) => {
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: 'pointer'
-        }
+          cursor: 'pointer',
+        },
       },
-      'Analyze Structure'
-    )
+      'Analyze Structure',
+    ),
   );
-}; 
+};

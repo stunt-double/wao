@@ -1,16 +1,16 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
-import { 
-  activateOptimizer, 
-  deactivateOptimizer, 
-  describeElementVisually, 
+import {
+  activateOptimizer,
+  deactivateOptimizer,
+  describeElementVisually,
   defineInteraction,
   describePage,
   describeDataFlow,
   analyzeAccessibility,
   extractSemanticStructure,
   highlightElementRole,
-  isActivated
+  isActivated,
 } from './core.js';
 
 // Define types for props and interfaces
@@ -89,7 +89,7 @@ export const useWAO = (autoActivate = false): WAOHookReturn => {
   // Sync state with WAO activation state
   useEffect(() => {
     setIsActive(isActivated());
-    
+
     // Auto activate if specified
     if (autoActivate && !isActivated()) {
       activateOptimizer(document.body);
@@ -120,17 +120,14 @@ export const useWAO = (autoActivate = false): WAOHookReturn => {
     describeDataFlow,
     analyzeAccessibility,
     extractStructure: extractSemanticStructure,
-    highlightRole: highlightElementRole
+    highlightRole: highlightElementRole,
   };
 };
 
 /**
  * WAO Provider component for React applications
  */
-export const WAOProvider: React.FC<WAOProviderProps> = ({ 
-  children, 
-  autoActivate = false 
-}) => {
+export const WAOProvider: React.FC<WAOProviderProps> = ({ children, autoActivate = false }) => {
   const { isActive, activate } = useWAO(autoActivate);
 
   useEffect(() => {
@@ -153,7 +150,7 @@ export const WAOElement: React.FC<WAOElementProps> = ({
   importance,
   dataContext,
   interactions = [],
-  children
+  children,
 }) => {
   const { isActive, describeElement, defineInteraction } = useWAO();
 
@@ -163,7 +160,7 @@ export const WAOElement: React.FC<WAOElementProps> = ({
       describeElement(selector, description, elementType, {
         role,
         importance,
-        dataContext
+        dataContext,
       });
 
       // Set up interactions if provided
@@ -172,21 +169,21 @@ export const WAOElement: React.FC<WAOElementProps> = ({
           selector,
           interaction.type,
           interaction.method,
-          interaction.expectedOutcome
+          interaction.expectedOutcome,
         );
       });
     }
   }, [
-    isActive, 
-    selector, 
-    description, 
-    elementType, 
-    role, 
-    importance, 
-    dataContext, 
+    isActive,
+    selector,
+    description,
+    elementType,
+    role,
+    importance,
+    dataContext,
     interactions,
     describeElement,
-    defineInteraction
+    defineInteraction,
   ]);
 
   return <>{children}</>;
@@ -214,9 +211,9 @@ export const WAOToggle: React.FC<WAOToggleProps> = ({ className, style }) => {
         cursor: 'pointer',
         fontWeight: 'bold',
         boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-        ...style
+        ...style,
       }}
-      onClick={() => isActive ? deactivate() : activate()}
+      onClick={() => (isActive ? deactivate() : activate())}
     >
       {isActive ? 'Deactivate Optimization' : 'Activate Optimization'}
     </button>
@@ -257,11 +254,7 @@ export const WAODataFlow: React.FC<WAODataFlowProps> = ({ flow }) => {
  * WAO Inspector component for one-click accessibility and structure analysis
  */
 export const WAOInspector: React.FC<WAOInspectorProps> = ({ autoAnalyze = false }) => {
-  const { 
-    isActive, 
-    analyzeAccessibility, 
-    extractStructure 
-  } = useWAO();
+  const { isActive, analyzeAccessibility, extractStructure } = useWAO();
 
   useEffect(() => {
     if (isActive && autoAnalyze) {
@@ -282,7 +275,7 @@ export const WAOInspector: React.FC<WAOInspectorProps> = ({ autoAnalyze = false 
         right: '20px',
         zIndex: 10000,
         display: 'flex',
-        gap: '8px'
+        gap: '8px',
       }}
     >
       <button
@@ -293,7 +286,7 @@ export const WAOInspector: React.FC<WAOInspectorProps> = ({ autoAnalyze = false 
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Analyze Accessibility
@@ -306,11 +299,11 @@ export const WAOInspector: React.FC<WAOInspectorProps> = ({ autoAnalyze = false 
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       >
         Analyze Structure
       </button>
     </div>
   );
-}; 
+};
