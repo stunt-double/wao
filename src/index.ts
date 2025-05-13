@@ -1,28 +1,28 @@
-import { 
+import {
   activateOptimizer,
-  deactivateOptimizer, 
-  describeElementVisually, 
+  deactivateOptimizer,
+  describeElementVisually,
   defineInteraction,
   describePage,
   describeDataFlow,
   analyzeAccessibility,
   extractSemanticStructure,
   highlightElementRole,
-  isActivated 
+  isActivated,
 } from './core';
 
 // Export all core functions
-export { 
+export {
   activateOptimizer,
-  deactivateOptimizer, 
-  describeElementVisually, 
+  deactivateOptimizer,
+  describeElementVisually,
   defineInteraction,
   describePage,
   describeDataFlow,
   analyzeAccessibility,
   extractSemanticStructure,
   highlightElementRole,
-  isActivated 
+  isActivated,
 };
 
-// Note: React components are available via 'web-augmentation-optimizer/react'
+// Note: React components are available via '@stdbl/wao/react'

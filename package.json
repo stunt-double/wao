@@ -1,5 +1,5 @@
 {
-  "name": "@stunt-double/wao",
+  "name": "@stdbl/wao",
   "version": "0.1.0",
   "description": "Optimize web pages for LLM agent interaction and understanding",
   "main": "dist/index.js",
@@ -18,7 +18,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -32,7 +34,8 @@
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'",
     "validate": "pnpm run lint && pnpm run format:check && pnpm run test",
-    "docs": "typedoc --out docs src"
+    "docs": "typedoc --out docs src",
+    "prepublishOnly": "pnpm run validate"
   },
   "keywords": [
     "llm",
@@ -41,9 +44,24 @@
     "automation",
     "accessibility",
     "semantic",
-    "react"
+    "react",
+    "web-optimization",
+    "ai",
+    "stunt-double"
   ],
   "author": "Stunt Double",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stunt-double/wao.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stunt-double/wao/issues"
+  },
+  "homepage": "https://github.com/stunt-double/wao#readme",
   "license": "MIT",
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
@@ -70,5 +88,8 @@
     "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.10.0",
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
