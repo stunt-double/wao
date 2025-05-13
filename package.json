@@ -1,6 +1,6 @@
 {
   "name": "@stdbl/wao",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Optimize web pages for LLM agent interaction and understanding",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
