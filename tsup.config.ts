@@ -23,12 +23,14 @@ export default defineConfig([
     format: ['cjs', 'esm'],
     dts: true,
     sourcemap: true,
-    external: ['react', 'react-dom', './core.js'],
+    external: ['react', 'react-dom'],
     outExtension({ format }) {
       return {
         js: format === 'esm' ? '.mjs' : '.js',
       };
     },
+    // Don't split files to avoid import issues
+    splitting: false,
   },
   // UMD build for direct browser usage
   {
@@ -47,4 +49,4 @@ export default defineConfig([
       };
     },
   },
-]); 
+]);

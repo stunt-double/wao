@@ -1,0 +1,50 @@
+{
+  "name": "wao-react-todo-example",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "examples/react-todo-app/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx vite build",
+        "cwd": "examples/react-todo-app"
+      },
+      "dependsOn": [
+        {
+          "projects": ["@stdbl/wao"],
+          "target": "build"
+        }
+      ]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx vite",
+        "cwd": "examples/react-todo-app"
+      },
+      "dependsOn": [
+        {
+          "projects": ["@stdbl/wao"],
+          "target": "build"
+        }
+      ]
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx vite preview",
+        "cwd": "examples/react-todo-app"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src",
+        "cwd": "examples/react-todo-app"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["@stdbl/wao"]
+}
