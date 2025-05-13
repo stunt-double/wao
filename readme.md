@@ -1,11 +1,11 @@
 # 🌟 WAO - Web Augmentation Optimizer
 
+[![npm version](https://img.shields.io/npm/v/@stdbl/wao.svg)](https://www.npmjs.com/package/@stdbl/wao)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 > **WAO!** Transform any webpage into an LLM-optimized interface
 
 WAO (Web Augmentation Optimizer) is a lightweight JavaScript library that transforms any website into a structured, semantic representation optimized for Large Language Models (LLMs) acting as autonomous web agents.
-
-🚨 WAO is in early beta, open an issue or PR to contribute 
-
 
 ## 🚀 Features
 
@@ -48,7 +48,17 @@ Once activated, WAO transforms the page by:
 
 ### NPM
 ```bash
-npm install @stunt-double/wao
+npm install @stdbl/wao
+```
+
+### Yarn
+```bash
+yarn add @stdbl/wao
+```
+
+### pnpm
+```bash
+pnpm add @stdbl/wao
 ```
 
 ## 🔧 Usage
@@ -57,7 +67,8 @@ npm install @stunt-double/wao
 Just include the script in your webpage:
 
 ```html
-<script src="path/to/wao.min.js"></script>
+<!-- UMD version -->
+<script src="https://unpkg.com/@stdbl/wao/dist/index.umd.js"></script>
 ```
 
 That's it! WAO remains dormant until an LLM activates it.
@@ -119,7 +130,7 @@ WAO provides first-class React support through components and hooks:
 Wrap your app with the WAO provider:
 
 ```jsx
-import { WAOProvider } from 'web-augmentation-optimizer';
+import { WAOProvider } from '@stdbl/wao/react';
 
 function App() {
   return (
@@ -135,7 +146,7 @@ function App() {
 Access WAO functionality with the `useWAO` hook:
 
 ```jsx
-import { useWAO } from 'web-augmentation-optimizer';
+import { useWAO } from '@stdbl/wao/react';
 
 function MyComponent() {
   const { 
@@ -169,7 +180,7 @@ import {
   WAOToggle, 
   WAOPage, 
   WAOInspector 
-} from 'web-augmentation-optimizer';
+} from '@stdbl/wao/react';
 
 function ProductPage() {
   return (
@@ -321,22 +332,18 @@ VS Code users will get automatic formatting on save and linting with the provide
 
 ### Publishing to NPM
 
-This project uses GitHub Actions to automatically publish to NPM when a new release is created:
+This package is published to NPM under the `@stdbl` organization. To publish a new version:
 
-1. Ensure you have an NPM account and are added as a collaborator to the package
-2. Store your NPM token as a GitHub repository secret named `NPM_TOKEN`
-3. Create a new release on GitHub
-4. The workflow will automatically build and publish the package to NPM
+1. Update the version in `package.json`
+2. Run tests and validations: `pnpm validate`
+3. Build the package: `pnpm build`
+4. Publish: `npm publish` (requires NPM authentication)
 
-Manual publishing is also possible:
+The package includes a GitHub Actions workflow to automatically publish when a new release is created:
 
-```bash
-# Build the package
-npm run build
-
-# Publish to NPM
-npm publish
-```
+1. Ensure your NPM token is stored as a GitHub repository secret named `NPM_TOKEN`
+2. Create a new release on GitHub
+3. The workflow will automatically build and publish the package to NPM
 
 ## 🔬 Use Cases
 
